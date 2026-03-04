@@ -1,99 +1,94 @@
-# 项目结构与运维
+# 项目结构与运维（Codex 运行时）
 
-## 目录层级（真实运行）
+## 目录层级（推荐）
 
-在 Claude Code + Marketplace 安装下，至少有 4 层概念：
+在 Codex 本地脚本模式下，建议区分 4 层：
 
-1. `WORKSPACE_ROOT`（Claude 工作区根，通常是 `${CLAUDE_PROJECT_DIR}`）
-2. `WORKSPACE_ROOT/.claude/`（工作区级指针与配置）
-3. `PROJECT_ROOT`（真实小说项目根，`/webnovel-init` 按书名创建）
-4. `CLAUDE_PLUGIN_ROOT`（插件缓存目录，不在项目内）
+1. `WORKSPACE_ROOT`（你的工作区根）
+2. `PROJECT_ROOT`（真实小说项目根，包含 `.webnovel/state.json`）
+3. `WEBNOVEL_RUNTIME_ROOT`（运行时代码根，默认 `~/.codex/webnovel-writer/runtime`）
+4. `~/.codex/webnovel-writer/`（用户级配置与 registry）
 
-### A) Workspace 目录（含 `.claude`）
+### A) 工作区与书项目
 
 ```text
 workspace-root/
-├── .claude/
-│   ├── .webnovel-current-project   # 指向当前小说项目根
-│   └── settings.json
 ├── 小说A/
+│   ├── .webnovel/
+│   ├── 正文/
+│   ├── 大纲/
+│   └── 设定集/
 ├── 小说B/
 └── ...
 ```
 
-### B) 小说项目目录（`PROJECT_ROOT`）
+### B) 运行时目录
 
 ```text
-project-root/
-├── .webnovel/            # 运行时数据（state/index/vectors/summaries）
-├── 正文/                  # 正文章节
-├── 大纲/                  # 总纲与卷纲
-└── 设定集/                # 世界观、角色、力量体系
-```
-
-## 插件目录（Marketplace 安装）
-
-插件不在小说项目目录内，而在 Claude 插件缓存目录。运行时统一用 `CLAUDE_PLUGIN_ROOT` 引用：
-
-```text
-${CLAUDE_PLUGIN_ROOT}/
-├── skills/
+${WEBNOVEL_RUNTIME_ROOT}/
 ├── agents/
+├── skills/
 ├── scripts/
-└── references/
+├── references/
+└── dashboard/
 ```
 
-### C) 用户级全局映射（兜底）
-
-当工作区没有可用指针时，会使用用户级 registry 做 `workspace -> current_project_root` 映射：
+### C) 用户级配置目录
 
 ```text
-${CLAUDE_HOME:-~/.claude}/webnovel-writer/workspaces.json
+~/.codex/webnovel-writer/
+├── .env
+└── workspaces.json
 ```
 
-## 模拟目录实测（2026-03-03）
+兼容读取（兜底）：
 
-基于 `D:\wk\novel skill\plugin-sim-20260303-012048` 的实际结果：
-
-- `WORKSPACE_ROOT`：`D:\wk\novel skill\plugin-sim-20260303-012048`
-- 指针文件：`D:\wk\novel skill\plugin-sim-20260303-012048\.claude\.webnovel-current-project`
-- 指针内容：`D:\wk\novel skill\plugin-sim-20260303-012048\凡人资本论-二测`
-- 已创建项目示例：`凡人资本论/`、`凡人资本论-二测/`
+```text
+~/.claude/webnovel-writer/
+├── .env
+└── workspaces.json
+```
 
 ## 常用运维命令
 
-统一前置（手动 CLI 场景）：
+统一前置：
 
 ```bash
-export WORKSPACE_ROOT="${CLAUDE_PROJECT_DIR:-$PWD}"
-export SCRIPTS_DIR="${CLAUDE_PLUGIN_ROOT}/scripts"
-export PROJECT_ROOT="$(python "${SCRIPTS_DIR}/webnovel.py" --project-root "${WORKSPACE_ROOT}" where)"
+export WEBNOVEL_WORKSPACE_ROOT="${WEBNOVEL_WORKSPACE_ROOT:-$PWD}"
+export WEBNOVEL_RUNTIME_ROOT="${WEBNOVEL_RUNTIME_ROOT:-$HOME/.codex/webnovel-writer/runtime}"
+export SCRIPTS_DIR="${WEBNOVEL_RUNTIME_ROOT}/scripts"
+export PROJECT_ROOT="$(python3 "${SCRIPTS_DIR}/webnovel.py" --project-root "${WEBNOVEL_WORKSPACE_ROOT}" where)"
 ```
 
 ### 索引重建
 
 ```bash
-python "${SCRIPTS_DIR}/webnovel.py" --project-root "${PROJECT_ROOT}" index process-chapter --chapter 1
-python "${SCRIPTS_DIR}/webnovel.py" --project-root "${PROJECT_ROOT}" index stats
+python3 "${SCRIPTS_DIR}/webnovel.py" --project-root "${PROJECT_ROOT}" index process-chapter --chapter 1
+python3 "${SCRIPTS_DIR}/webnovel.py" --project-root "${PROJECT_ROOT}" index stats
 ```
 
 ### 健康报告
 
 ```bash
-python "${SCRIPTS_DIR}/webnovel.py" --project-root "${PROJECT_ROOT}" status -- --focus all
-python "${SCRIPTS_DIR}/webnovel.py" --project-root "${PROJECT_ROOT}" status -- --focus urgency
+python3 "${SCRIPTS_DIR}/webnovel.py" --project-root "${PROJECT_ROOT}" status -- --focus all
+python3 "${SCRIPTS_DIR}/webnovel.py" --project-root "${PROJECT_ROOT}" status -- --focus urgency
 ```
 
 ### 向量重建
 
 ```bash
-python "${SCRIPTS_DIR}/webnovel.py" --project-root "${PROJECT_ROOT}" rag index-chapter --chapter 1
-python "${SCRIPTS_DIR}/webnovel.py" --project-root "${PROJECT_ROOT}" rag stats
+python3 "${SCRIPTS_DIR}/webnovel.py" --project-root "${PROJECT_ROOT}" rag index-chapter --chapter 1
+python3 "${SCRIPTS_DIR}/webnovel.py" --project-root "${PROJECT_ROOT}" rag stats
 ```
 
 ### 测试入口
 
 ```bash
-pwsh "${CLAUDE_PLUGIN_ROOT}/scripts/run_tests.ps1" -Mode smoke
-pwsh "${CLAUDE_PLUGIN_ROOT}/scripts/run_tests.ps1" -Mode full
+pwsh "${WEBNOVEL_RUNTIME_ROOT}/scripts/run_tests.ps1" -Mode smoke
+pwsh "${WEBNOVEL_RUNTIME_ROOT}/scripts/run_tests.ps1" -Mode full
 ```
+
+## Claude 双栈兼容说明
+
+- 若你仍使用 Claude 插件，可继续沿用旧工作流。
+- 当前迁移策略是 Codex 优先、Claude 兼容读取，不会主动删除旧 `.claude` 数据。
