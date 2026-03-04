@@ -18,6 +18,7 @@ from .config import get_config
 from .index_manager import IndexManager, WritingChecklistScoreMeta
 from .context_ranker import ContextRanker
 from .snapshot_manager import SnapshotManager, SnapshotVersionMismatch
+from .runtime_paths import get_runtime_root
 from .context_weights import (
     DEFAULT_TEMPLATE as CONTEXT_DEFAULT_TEMPLATE,
     TEMPLATE_WEIGHTS as CONTEXT_TEMPLATE_WEIGHTS,
@@ -299,11 +300,8 @@ class ContextManager:
         primary_genre = genres[0]
         secondary_genres = genres[1:]
         composite = len(genres) > 1
-        profile_path = self.config.project_root / ".claude" / "references" / "genre-profiles.md"
-        taxonomy_path = self.config.project_root / ".claude" / "references" / "reading-power-taxonomy.md"
-
-        profile_text = profile_path.read_text(encoding="utf-8") if profile_path.exists() else ""
-        taxonomy_text = taxonomy_path.read_text(encoding="utf-8") if taxonomy_path.exists() else ""
+        profile_text = self._load_reference_markdown("genre-profiles.md")
+        taxonomy_text = self._load_reference_markdown("reading-power-taxonomy.md")
 
         profile_excerpt = self._extract_genre_section(profile_text, primary_genre)
         taxonomy_excerpt = self._extract_genre_section(taxonomy_text, primary_genre)
@@ -334,6 +332,21 @@ class ContextManager:
             "reference_hints": refs,
             "composite_hints": composite_hints,
         }
+
+    def _load_reference_markdown(self, filename: str) -> str:
+        candidates = [
+            self.config.project_root / ".codex" / "references" / filename,
+            self.config.project_root / ".claude" / "references" / filename,
+            get_runtime_root() / "references" / filename,
+        ]
+
+        for path in candidates:
+            try:
+                if path.exists():
+                    return path.read_text(encoding="utf-8")
+            except Exception:
+                continue
+        return ""
 
     def _build_writing_guidance(
         self,

@@ -146,3 +146,24 @@ def test_resolve_project_root_ignores_stale_pointer_and_fallbacks(tmp_path):
 
     resolved = resolve_project_root(cwd=workspace)
     assert resolved == default_project.resolve()
+
+
+def test_resolve_project_root_uses_webnovel_workspace_root_env(tmp_path, monkeypatch):
+    _ensure_scripts_on_path()
+
+    from project_locator import resolve_project_root
+
+    workspace = tmp_path / "workspace"
+    (workspace / ".codex").mkdir(parents=True, exist_ok=True)
+
+    project_root = workspace / "book"
+    (project_root / ".webnovel").mkdir(parents=True, exist_ok=True)
+    (project_root / ".webnovel" / "state.json").write_text("{}", encoding="utf-8")
+    (workspace / ".codex" / ".webnovel-current-project").write_text(str(project_root), encoding="utf-8")
+
+    monkeypatch.setenv("WEBNOVEL_WORKSPACE_ROOT", str(workspace))
+    monkeypatch.delenv("WEBNOVEL_PROJECT_ROOT", raising=False)
+    monkeypatch.delenv("CLAUDE_PROJECT_DIR", raising=False)
+
+    resolved = resolve_project_root(cwd=tmp_path / "outside")
+    assert resolved == project_root.resolve()
