@@ -3,6 +3,8 @@
 
 import json
 import logging
+import os
+import subprocess
 import sys
 from pathlib import Path
 from types import SimpleNamespace
@@ -19,7 +21,7 @@ def _load_module():
 
 def test_workflow_lifecycle_and_trace(tmp_path, monkeypatch):
     module = _load_module()
-    monkeypatch.setattr(module, "find_project_root", lambda: tmp_path)
+    monkeypatch.setattr(module, "find_project_root", lambda _override=None: tmp_path)
 
     webnovel_dir = tmp_path / ".webnovel"
     webnovel_dir.mkdir(parents=True, exist_ok=True)
@@ -46,7 +48,7 @@ def test_workflow_lifecycle_and_trace(tmp_path, monkeypatch):
 
 def test_start_task_reentry_increments_retry(tmp_path, monkeypatch):
     module = _load_module()
-    monkeypatch.setattr(module, "find_project_root", lambda: tmp_path)
+    monkeypatch.setattr(module, "find_project_root", lambda _override=None: tmp_path)
 
     webnovel_dir = tmp_path / ".webnovel"
     webnovel_dir.mkdir(parents=True, exist_ok=True)
@@ -63,7 +65,7 @@ def test_start_task_reentry_increments_retry(tmp_path, monkeypatch):
 
 def test_complete_step_rejects_mismatch_step_id(tmp_path, monkeypatch):
     module = _load_module()
-    monkeypatch.setattr(module, "find_project_root", lambda: tmp_path)
+    monkeypatch.setattr(module, "find_project_root", lambda _override=None: tmp_path)
 
     webnovel_dir = tmp_path / ".webnovel"
     webnovel_dir.mkdir(parents=True, exist_ok=True)
@@ -81,7 +83,7 @@ def test_complete_step_rejects_mismatch_step_id(tmp_path, monkeypatch):
 
 def test_workflow_step_owner_and_order_violation_trace(tmp_path, monkeypatch):
     module = _load_module()
-    monkeypatch.setattr(module, "find_project_root", lambda: tmp_path)
+    monkeypatch.setattr(module, "find_project_root", lambda _override=None: tmp_path)
 
     webnovel_dir = tmp_path / ".webnovel"
     webnovel_dir.mkdir(parents=True, exist_ok=True)
@@ -120,7 +122,7 @@ def test_safe_append_call_trace_logs_failure(monkeypatch, caplog):
 
 def test_workflow_reentry_does_not_duplicate_history(tmp_path, monkeypatch):
     module = _load_module()
-    monkeypatch.setattr(module, "find_project_root", lambda: tmp_path)
+    monkeypatch.setattr(module, "find_project_root", lambda _override=None: tmp_path)
 
     webnovel_dir = tmp_path / ".webnovel"
     webnovel_dir.mkdir(parents=True, exist_ok=True)
@@ -139,7 +141,7 @@ def test_workflow_reentry_does_not_duplicate_history(tmp_path, monkeypatch):
 
 def test_cleanup_artifacts_requires_confirm(tmp_path, monkeypatch):
     module = _load_module()
-    monkeypatch.setattr(module, "find_project_root", lambda: tmp_path)
+    monkeypatch.setattr(module, "find_project_root", lambda _override=None: tmp_path)
 
     webnovel_dir = tmp_path / ".webnovel"
     webnovel_dir.mkdir(parents=True, exist_ok=True)
@@ -165,7 +167,7 @@ def test_cleanup_artifacts_requires_confirm(tmp_path, monkeypatch):
 
 def test_cleanup_artifacts_confirm_deletes_with_backup(tmp_path, monkeypatch):
     module = _load_module()
-    monkeypatch.setattr(module, "find_project_root", lambda: tmp_path)
+    monkeypatch.setattr(module, "find_project_root", lambda _override=None: tmp_path)
 
     webnovel_dir = tmp_path / ".webnovel"
     webnovel_dir.mkdir(parents=True, exist_ok=True)
@@ -193,3 +195,65 @@ def test_cleanup_artifacts_confirm_deletes_with_backup(tmp_path, monkeypatch):
     backup_dir = tmp_path / ".webnovel" / "recovery_backups"
     backups = list(backup_dir.glob("ch0008-*"))
     assert backups
+
+
+def test_workflow_cli_uses_webnovel_workspace_root_env_without_claude(tmp_path):
+    module = _load_module()
+    script_path = Path(module.__file__).resolve()
+
+    workspace_root = tmp_path / "workspace"
+    workspace_root.mkdir(parents=True, exist_ok=True)
+    (workspace_root / ".codex").mkdir(parents=True, exist_ok=True)
+
+    project_root = workspace_root / "book"
+    (project_root / ".webnovel").mkdir(parents=True, exist_ok=True)
+    (project_root / ".webnovel" / "state.json").write_text("{}", encoding="utf-8")
+
+    (workspace_root / ".codex" / ".webnovel-current-project").write_text(str(project_root), encoding="utf-8")
+
+    env = os.environ.copy()
+    env["WEBNOVEL_WORKSPACE_ROOT"] = str(workspace_root)
+    env.pop("CLAUDE_PROJECT_DIR", None)
+    env.pop("WEBNOVEL_PROJECT_ROOT", None)
+
+    start_task = subprocess.run(
+        [sys.executable, str(script_path), "start-task", "--command", "webnovel-write", "--chapter", "10"],
+        cwd=tmp_path,
+        env=env,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert start_task.returncode == 0, start_task.stderr
+
+    start_step = subprocess.run(
+        [sys.executable, str(script_path), "start-step", "--step-id", "Step 1", "--step-name", "Context"],
+        cwd=tmp_path,
+        env=env,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert start_step.returncode == 0, start_step.stderr
+
+    complete_step = subprocess.run(
+        [
+            sys.executable,
+            str(script_path),
+            "complete-step",
+            "--step-id",
+            "Step 1",
+            "--artifacts",
+            '{"state_json_modified":true}',
+        ],
+        cwd=tmp_path,
+        env=env,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert complete_step.returncode == 0, complete_step.stderr
+
+    state = json.loads((project_root / ".webnovel" / "workflow_state.json").read_text(encoding="utf-8"))
+    assert state["current_task"] is not None
+    assert state["current_task"]["completed_steps"][-1]["id"] == "Step 1"

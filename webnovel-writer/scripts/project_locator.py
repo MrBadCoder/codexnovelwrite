@@ -386,6 +386,34 @@ def resolve_project_root(explicit_project_root: Optional[str] = None, *, cwd: Op
             return root
         raise FileNotFoundError(f"WEBNOVEL_PROJECT_ROOT is set but invalid (missing .webnovel/state.json): {root}")
 
+    workspace_root_env = os.environ.get(ENV_WEBNOVEL_WORKSPACE_ROOT)
+    if workspace_root_env:
+        ws_root = normalize_windows_path(workspace_root_env).expanduser()
+        try:
+            ws_root = ws_root.resolve()
+        except Exception:
+            ws_root = ws_root
+
+        ws_git_root = _find_git_root(ws_root)
+        if _is_project_root(ws_root):
+            return ws_root.resolve()
+
+        pointer_root = _resolve_project_root_from_pointer(ws_root, stop_at=ws_git_root)
+        if pointer_root is not None:
+            return pointer_root
+
+        reg_root = _resolve_project_root_from_global_registry(
+            ws_root,
+            workspace_hint=ws_root,
+            allow_last_used_fallback=False,
+        )
+        if reg_root is not None:
+            return reg_root
+
+        for candidate in _candidate_roots(ws_root, stop_at=ws_git_root):
+            if _is_project_root(candidate):
+                return candidate.resolve()
+
     base = (cwd or Path.cwd()).resolve()
     git_root = _find_git_root(base)
 
@@ -397,9 +425,7 @@ def resolve_project_root(explicit_project_root: Optional[str] = None, *, cwd: Op
     # 用户级 registry fallback（仅在“有上下文提示”时启用，避免误命中）
     # - 若 WEBNOVEL_WORKSPACE_ROOT / CLAUDE_PROJECT_DIR 存在：认为运行时提供了工作区上下文
     # - 否则仅在 base 位于某个已记录 workspace 内时启用（前缀匹配）
-    allow_last_used = bool(
-        os.environ.get(ENV_WEBNOVEL_WORKSPACE_ROOT) or os.environ.get(ENV_CLAUDE_PROJECT_DIR)
-    )
+    allow_last_used = bool(os.environ.get(ENV_CLAUDE_PROJECT_DIR))
     reg_root = _resolve_project_root_from_global_registry(
         base,
         workspace_hint=None,
