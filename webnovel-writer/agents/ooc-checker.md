@@ -9,7 +9,7 @@ model: inherit
 
 > **Role**: Character integrity guardian preventing OOC (Out-Of-Character) violations.
 
-> **输出格式**: 遵循 `${CLAUDE_PLUGIN_ROOT}/references/checker-output-schema.md` 统一 JSON Schema
+> **输出格式**: 遵循 `${WEBNOVEL_RUNTIME_ROOT}/references/checker-output-schema.md` 统一 JSON Schema
 
 ## Scope
 

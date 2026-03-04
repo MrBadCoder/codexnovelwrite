@@ -1,7 +1,7 @@
 ---
 name: webnovel-write
 description: Writes webnovel chapters (default 2000-2500 words). Use when the user asks to write a chapter or runs /webnovel-write. Runs context, drafting, review, polish, and data extraction.
-allowed-tools: Read Write Edit Grep Bash Task
+allowed-tools: Read Write Edit Grep Bash
 ---
 
 # Chapter Writing (Structured Workflow v2)
@@ -95,7 +95,7 @@ allowed-tools: Read Write Edit Grep Bash Task
 
 - `Read/Grep`：读取 `state.json`、大纲、章节正文与参考文件。
 - `Bash`：运行 `extract_chapter_context.py`、`index_manager`、`workflow_manager`。
-- `Task`：调用 `context-agent`、审查 subagent、`data-agent` 并行执行。
+- Codex 子流程：调用 `context-agent`、审查 subagent、`data-agent` 并行执行。
 
 ## 交互流程
 
@@ -164,7 +164,7 @@ python "${SCRIPTS_DIR}/webnovel.py" --project-root "${PROJECT_ROOT}" workflow co
 
 ### Step 1：Context Agent（内置 Contract v2，生成直写执行包）
 
-使用 Task 调用 `context-agent`，参数：
+使用 Codex 子流程调用 `context-agent`，参数：
 - `chapter`
 - `project_root`
 - `storage_path=.webnovel/`
@@ -211,7 +211,7 @@ cat "${SKILL_ROOT}/references/style-adapter.md"
 输出：
 - 风格化正文（覆盖原章节文件）。
 
-### Step 3：审查（auto 路由，必须由 Task 子代理执行）
+### Step 3：审查（auto 路由，必须由 Codex 子流程执行）
 
 执行前加载：
 ```bash
@@ -219,7 +219,7 @@ cat "${SKILL_ROOT}/references/step-3-review-gate.md"
 ```
 
 调用约束：
-- 必须用 `Task` 调用审查 subagent，禁止主流程伪造审查结论。
+- 必须用 Codex 子流程调用审查 subagent，禁止主流程伪造审查结论。
 - 可并行发起审查，统一汇总 `issues/severity/overall_score`。
 - 默认使用 `auto` 路由：根据“本章执行合同 + 正文信号 + 大纲标签”动态选择审查器。
 
@@ -267,7 +267,7 @@ cat "${SKILL_ROOT}/references/writing/typesetting.md"
 
 ### Step 5：Data Agent（状态与索引回写）
 
-使用 Task 调用 `data-agent`，参数：
+使用 Codex 子流程调用 `data-agent`，参数：
 - `chapter`
 - `chapter_file="正文/第{chapter_padded}章.md"`
 - `review_score=Step 3 overall_score`

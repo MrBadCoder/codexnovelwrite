@@ -19,19 +19,19 @@ from pathlib import Path
 from typing import Iterable, Optional
 
 from runtime_compat import normalize_windows_path
+from data_modules.runtime_paths import get_user_config_dir, get_user_config_dirs
 
 
 DEFAULT_PROJECT_DIR_NAMES: tuple[str, ...] = ("webnovel-project",)
-CURRENT_PROJECT_POINTER_REL: Path = Path(".claude") / ".webnovel-current-project"
-
-# 用户级全局映射（当 skills/agents 安装在 ~/.claude 时，项目目录可能在任意盘符）
-# 该文件用于在“空上下文 + CWD 不在项目内”的情况下仍能定位到正确 project_root。
-GLOBAL_REGISTRY_REL: Path = Path("webnovel-writer") / "workspaces.json"
+CURRENT_PROJECT_POINTER_RELS: tuple[Path, ...] = (
+    Path(".codex") / ".webnovel-current-project",
+    Path(".claude") / ".webnovel-current-project",
+)
+GLOBAL_REGISTRY_FILE = "workspaces.json"
 
 # Claude Code 常见环境变量（存在时优先作为“工作区根目录”提示）
 ENV_CLAUDE_PROJECT_DIR = "CLAUDE_PROJECT_DIR"
-ENV_CLAUDE_HOME = "CLAUDE_HOME"
-ENV_WEBNOVEL_CLAUDE_HOME = "WEBNOVEL_CLAUDE_HOME"
+ENV_WEBNOVEL_WORKSPACE_ROOT = "WEBNOVEL_WORKSPACE_ROOT"
 
 
 def _find_git_root(cwd: Path) -> Optional[Path]:
@@ -59,18 +59,12 @@ def _normcase_path_key(p: Path) -> str:
     return os.path.normcase(str(resolved))
 
 
-def _get_user_claude_root() -> Path:
-    raw = os.environ.get(ENV_WEBNOVEL_CLAUDE_HOME) or os.environ.get(ENV_CLAUDE_HOME)
-    if raw:
-        try:
-            return normalize_windows_path(raw).expanduser().resolve()
-        except Exception:
-            return normalize_windows_path(raw).expanduser()
-    return (Path.home() / ".claude").resolve()
+def _global_registry_paths_read() -> list[Path]:
+    return [path / GLOBAL_REGISTRY_FILE for path in get_user_config_dirs()]
 
 
-def _global_registry_path() -> Path:
-    return _get_user_claude_root() / GLOBAL_REGISTRY_REL
+def _global_registry_path_write() -> Path:
+    return get_user_config_dir() / GLOBAL_REGISTRY_FILE
 
 
 def _default_registry() -> dict:
@@ -128,62 +122,63 @@ def _resolve_project_root_from_global_registry(
     - 优先使用 workspace_hint / CLAUDE_PROJECT_DIR 提示做匹配。
     - 默认不使用 last_used 兜底，避免在“完全无上下文”时误命中错误项目。
     """
-    reg_path = _global_registry_path()
-    reg = _load_global_registry(reg_path)
-    workspaces = reg.get("workspaces") or {}
-    if not isinstance(workspaces, dict) or not workspaces:
-        return None
-
     hints: list[Path] = []
-    env_ws = os.environ.get(ENV_CLAUDE_PROJECT_DIR)
-    if env_ws:
-        hints.append(normalize_windows_path(env_ws).expanduser())
+    for env_name in (ENV_WEBNOVEL_WORKSPACE_ROOT, ENV_CLAUDE_PROJECT_DIR):
+        env_ws = os.environ.get(env_name)
+        if env_ws:
+            hints.append(normalize_windows_path(env_ws).expanduser())
     if workspace_hint is not None:
         hints.append(workspace_hint)
     hints.append(base)
 
-    # 1) 精确匹配
-    for hint in hints:
-        key = _normcase_path_key(hint)
-        entry = workspaces.get(key)
-        if isinstance(entry, dict):
-            raw = entry.get("current_project_root")
-            if isinstance(raw, str) and raw.strip():
-                target = normalize_windows_path(raw).expanduser()
-                if not target.is_absolute():
-                    continue
-                if _is_project_root(target):
-                    return target.resolve()
+    for reg_path in _global_registry_paths_read():
+        reg = _load_global_registry(reg_path)
+        workspaces = reg.get("workspaces") or {}
+        if not isinstance(workspaces, dict) or not workspaces:
+            continue
 
-    # 2) 前缀匹配（从 workspace 子目录运行时）
-    for hint in hints:
-        hint_key = _normcase_path_key(hint)
-        best_key: Optional[str] = None
-        best_len = -1
-        for ws_key in workspaces.keys():
-            if not isinstance(ws_key, str) or not ws_key:
-                continue
-            ws_key_norm = os.path.normcase(ws_key)
-            if hint_key == ws_key_norm or hint_key.startswith(ws_key_norm.rstrip("\\") + "\\"):
-                if len(ws_key_norm) > best_len:
-                    best_key = ws_key
-                    best_len = len(ws_key_norm)
-        if best_key:
-            entry = workspaces.get(best_key)
+        # 1) 精确匹配
+        for hint in hints:
+            key = _normcase_path_key(hint)
+            entry = workspaces.get(key)
             if isinstance(entry, dict):
                 raw = entry.get("current_project_root")
                 if isinstance(raw, str) and raw.strip():
                     target = normalize_windows_path(raw).expanduser()
-                    if target.is_absolute() and _is_project_root(target):
+                    if not target.is_absolute():
+                        continue
+                    if _is_project_root(target):
                         return target.resolve()
 
-    # 3) last_used（可选，默认关闭）
-    if allow_last_used_fallback:
-        raw = reg.get("last_used_project_root")
-        if isinstance(raw, str) and raw.strip():
-            target = normalize_windows_path(raw).expanduser()
-            if target.is_absolute() and _is_project_root(target):
-                return target.resolve()
+        # 2) 前缀匹配（从 workspace 子目录运行时）
+        for hint in hints:
+            hint_key = _normcase_path_key(hint)
+            best_key: Optional[str] = None
+            best_len = -1
+            for ws_key in workspaces.keys():
+                if not isinstance(ws_key, str) or not ws_key:
+                    continue
+                ws_key_norm = os.path.normcase(ws_key)
+                if hint_key == ws_key_norm or hint_key.startswith(ws_key_norm.rstrip("\\") + "\\"):
+                    if len(ws_key_norm) > best_len:
+                        best_key = ws_key
+                        best_len = len(ws_key_norm)
+            if best_key:
+                entry = workspaces.get(best_key)
+                if isinstance(entry, dict):
+                    raw = entry.get("current_project_root")
+                    if isinstance(raw, str) and raw.strip():
+                        target = normalize_windows_path(raw).expanduser()
+                        if target.is_absolute() and _is_project_root(target):
+                            return target.resolve()
+
+        # 3) last_used（可选，默认关闭）
+        if allow_last_used_fallback:
+            raw = reg.get("last_used_project_root")
+            if isinstance(raw, str) and raw.strip():
+                target = normalize_windows_path(raw).expanduser()
+                if target.is_absolute() and _is_project_root(target):
+                    return target.resolve()
 
     return None
 
@@ -208,9 +203,11 @@ def update_global_registry_current_project(
 
     ws = workspace_root
     if ws is None:
-        env_ws = os.environ.get(ENV_CLAUDE_PROJECT_DIR)
-        if env_ws:
-            ws = normalize_windows_path(env_ws).expanduser()
+        for env_name in (ENV_WEBNOVEL_WORKSPACE_ROOT, ENV_CLAUDE_PROJECT_DIR):
+            env_ws = os.environ.get(env_name)
+            if env_ws:
+                ws = normalize_windows_path(env_ws).expanduser()
+                break
     if ws is None:
         return None
 
@@ -219,7 +216,7 @@ def update_global_registry_current_project(
     except Exception:
         ws = ws.expanduser()
 
-    reg_path = _global_registry_path()
+    reg_path = _global_registry_path_write()
     reg = _load_global_registry(reg_path)
     workspaces = reg.get("workspaces")
     if not isinstance(workspaces, dict):
@@ -256,7 +253,8 @@ def _is_project_root(path: Path) -> bool:
 def _pointer_candidates(cwd: Path, *, stop_at: Optional[Path] = None) -> Iterable[Path]:
     """Yield candidate pointer files from cwd up to parents (bounded by stop_at when provided)."""
     for candidate in (cwd, *cwd.parents):
-        yield candidate / CURRENT_PROJECT_POINTER_REL
+        for rel in CURRENT_PROJECT_POINTER_RELS:
+            yield candidate / rel
         if stop_at is not None and candidate == stop_at:
             break
 
@@ -267,7 +265,7 @@ def _resolve_project_root_from_pointer(cwd: Path, *, stop_at: Optional[Path] = N
 
     Pointer file format:
     - plain text absolute path, one line.
-    - relative path is also supported (resolved relative to pointer's `.claude/` dir).
+    - relative path is also supported (resolved relative to pointer marker dir).
     """
     for pointer_file in _pointer_candidates(cwd, stop_at=stop_at):
         if not pointer_file.is_file():
@@ -283,11 +281,18 @@ def _resolve_project_root_from_pointer(cwd: Path, *, stop_at: Optional[Path] = N
     return None
 
 
-def _find_workspace_root_with_claude(start: Path) -> Optional[Path]:
-    """Find nearest ancestor containing `.claude/`."""
+def _find_workspace_root_with_runtime_marker(start: Path) -> Optional[Path]:
+    """Find nearest ancestor containing `.codex/` or `.claude/` marker."""
     for candidate in (start, *start.parents):
-        if (candidate / ".claude").is_dir():
+        if (candidate / ".codex").is_dir() or (candidate / ".claude").is_dir():
             return candidate
+    return None
+
+
+def _pick_workspace_pointer_file(ws_root: Path) -> Optional[Path]:
+    for rel in CURRENT_PROJECT_POINTER_RELS:
+        if (ws_root / rel.parent.name).is_dir():
+            return ws_root / rel
     return None
 
 
@@ -295,28 +300,33 @@ def write_current_project_pointer(project_root: Path, *, workspace_root: Optiona
     """
     Write workspace-level current project pointer and return pointer file path.
 
-    If no workspace root with `.claude/` can be found, returns None (non-fatal).
+    If no workspace root with `.codex/` or `.claude/` can be found, returns None (non-fatal).
     """
     root = normalize_windows_path(project_root).expanduser().resolve()
     if not _is_project_root(root):
         raise FileNotFoundError(f"Not a webnovel project root (missing .webnovel/state.json): {root}")
 
-    ws_root = Path(workspace_root).expanduser().resolve() if workspace_root else _find_workspace_root_with_claude(root)
+    ws_root = (
+        Path(workspace_root).expanduser().resolve()
+        if workspace_root
+        else _find_workspace_root_with_runtime_marker(root)
+    )
     if ws_root is None:
-        ws_root = _find_workspace_root_with_claude(Path.cwd().resolve())
+        ws_root = _find_workspace_root_with_runtime_marker(Path.cwd().resolve())
     if ws_root is None:
-        # 兜底：若无法找到 `.claude/`，将项目父目录视为“工作区”候选，
-        # 仅用于写入用户级 registry（不创建 `.claude/` 目录，不写 pointer 文件）。
+        # 兜底：若无法找到 `.codex/` 或 `.claude/`，将项目父目录视为“工作区”候选，
+        # 仅用于写入用户级 registry（不创建运行时目录，不写 pointer 文件）。
         ws_root = root.parent if root.parent != root else None
     # 注意：ws_root 可能为 None（例如全局安装的 skills/agents，工作区内没有 `.claude/`）。
     # 这类情况仍然需要写入用户级 registry，以支持后续“空上下文”定位。
 
     pointer_file: Optional[Path] = None
     if ws_root is not None:
-        # 仅当工作区内已经存在 `.claude/` 时才写入指针，避免在任意目录下“凭空创建 .claude/”。
-        if (ws_root / ".claude").is_dir():
+        # 仅在工作区已存在运行时目录时写入指针，优先 `.codex/`，兼容 `.claude/`。
+        selected = _pick_workspace_pointer_file(ws_root)
+        if selected is not None:
             try:
-                pointer_file = ws_root / CURRENT_PROJECT_POINTER_REL
+                pointer_file = selected
                 pointer_file.write_text(str(root), encoding="utf-8")
             except Exception:
                 pointer_file = None
@@ -351,13 +361,13 @@ def resolve_project_root(explicit_project_root: Optional[str] = None, *, cwd: Op
         if _is_project_root(root):
             return root
 
-        # 兼容：显式传入“工作区根目录”（含 `.claude/.webnovel-current-project` 指针）
+        # 兼容：显式传入“工作区根目录”（含 `.codex/.webnovel-current-project` 或 `.claude/...` 指针）
         # 例如：D:\wk\xiaoshuo 不是项目根，但其指针指向 D:\wk\xiaoshuo\<书名>
         pointer_root = _resolve_project_root_from_pointer(root, stop_at=_find_git_root(root))
         if pointer_root is not None:
             return pointer_root
 
-        # 兼容：显式传入“工作区根目录”但其 `.claude/` 在用户目录（全局安装）时，
+        # 兼容：显式传入“工作区根目录”但其运行时目录在用户目录（全局安装）时，
         # workspace 内部可能没有指针文件。此时从用户级 registry 查找。
         reg_root = _resolve_project_root_from_global_registry(
             root,
@@ -376,6 +386,34 @@ def resolve_project_root(explicit_project_root: Optional[str] = None, *, cwd: Op
             return root
         raise FileNotFoundError(f"WEBNOVEL_PROJECT_ROOT is set but invalid (missing .webnovel/state.json): {root}")
 
+    workspace_root_env = os.environ.get(ENV_WEBNOVEL_WORKSPACE_ROOT)
+    if workspace_root_env:
+        ws_root = normalize_windows_path(workspace_root_env).expanduser()
+        try:
+            ws_root = ws_root.resolve()
+        except Exception:
+            ws_root = ws_root
+
+        ws_git_root = _find_git_root(ws_root)
+        if _is_project_root(ws_root):
+            return ws_root.resolve()
+
+        pointer_root = _resolve_project_root_from_pointer(ws_root, stop_at=ws_git_root)
+        if pointer_root is not None:
+            return pointer_root
+
+        reg_root = _resolve_project_root_from_global_registry(
+            ws_root,
+            workspace_hint=ws_root,
+            allow_last_used_fallback=False,
+        )
+        if reg_root is not None:
+            return reg_root
+
+        for candidate in _candidate_roots(ws_root, stop_at=ws_git_root):
+            if _is_project_root(candidate):
+                return candidate.resolve()
+
     base = (cwd or Path.cwd()).resolve()
     git_root = _find_git_root(base)
 
@@ -385,7 +423,7 @@ def resolve_project_root(explicit_project_root: Optional[str] = None, *, cwd: Op
         return pointer_root
 
     # 用户级 registry fallback（仅在“有上下文提示”时启用，避免误命中）
-    # - 若 CLAUDE_PROJECT_DIR 存在：认为 Claude Code 提供了工作区上下文
+    # - 若 WEBNOVEL_WORKSPACE_ROOT / CLAUDE_PROJECT_DIR 存在：认为运行时提供了工作区上下文
     # - 否则仅在 base 位于某个已记录 workspace 内时启用（前缀匹配）
     allow_last_used = bool(os.environ.get(ENV_CLAUDE_PROJECT_DIR))
     reg_root = _resolve_project_root_from_global_registry(
@@ -426,4 +464,3 @@ def resolve_state_file(
 
     root = resolve_project_root(explicit_project_root, cwd=base)
     return root / ".webnovel" / "state.json"
-

@@ -42,6 +42,26 @@ def test_load_dotenv(monkeypatch, tmp_path):
     assert os.environ.get("EMBED_BASE_URL") == "https://example.com"
 
 
+def test_load_dotenv_prefers_project_env_over_codex_and_claude(monkeypatch, tmp_path):
+    project_env = tmp_path / ".env"
+    project_env.write_text("EMBED_MODEL=from-project\n", encoding="utf-8")
+
+    codex_home = tmp_path / ".codex"
+    claude_home = tmp_path / ".claude"
+    (codex_home / "webnovel-writer").mkdir(parents=True, exist_ok=True)
+    (claude_home / "webnovel-writer").mkdir(parents=True, exist_ok=True)
+    (codex_home / "webnovel-writer" / ".env").write_text("EMBED_MODEL=from-codex\n", encoding="utf-8")
+    (claude_home / "webnovel-writer" / ".env").write_text("EMBED_MODEL=from-claude\n", encoding="utf-8")
+
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setenv("CODEX_HOME", str(codex_home))
+    monkeypatch.setenv("CLAUDE_HOME", str(claude_home))
+    monkeypatch.delenv("EMBED_MODEL", raising=False)
+
+    config_module._load_dotenv()
+    assert os.environ.get("EMBED_MODEL") == "from-project"
+
+
 def test_config_default_context_template_weights_dynamic_is_available(tmp_path):
     cfg = DataModulesConfig.from_project_root(tmp_path)
     dynamic = cfg.context_template_weights_dynamic

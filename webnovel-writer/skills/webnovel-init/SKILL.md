@@ -1,7 +1,7 @@
 ---
 name: webnovel-init
 description: 深度初始化网文项目。通过分阶段交互收集完整创作信息，生成可直接进入规划与写作的项目骨架与约束文件。
-allowed-tools: Read Write Edit Grep Bash Task AskUserQuestion WebSearch WebFetch
+allowed-tools: Read Write Edit Grep Bash
 ---
 
 # Project Initialization (Deep Mode v2)
@@ -16,7 +16,7 @@ allowed-tools: Read Write Edit Grep Bash Task AskUserQuestion WebSearch WebFetch
 
 1. 先收集，再生成；未过充分性闸门，不执行 `init_project.py`。
 2. 分波次提问，每轮只问“当前缺失且会阻塞下一步”的信息。
-3. 允许调用 `Read/Grep/Bash/Task/AskUserQuestion/WebSearch/WebFetch` 辅助收集。
+3. 允许调用 `Read/Grep/Bash` 与 Codex 子流程、普通交互提问、Codex Web 工具辅助收集。
 4. 用户已明确的信息不重复问；冲突信息优先让用户裁决。
 5. Deep 模式优先完整性，允许慢一点，但禁止漏关键字段。
 
@@ -112,10 +112,9 @@ allowed-tools: Read Write Edit Grep Bash Task AskUserQuestion WebSearch WebFetch
 
 - `Read/Grep`：读取项目上下文与参考文件（`README.md`、`CLAUDE.md`、`templates/genres/*`、`references/*`）。
 - `Bash`：执行 `init_project.py`、文件存在性检查、最小验证命令。
-- `Task`：拆分并行子任务（如题材映射、约束包候选生成、文件验证）。
-- `AskUserQuestion`：用于关键分歧裁决、候选方案选择、最终确认。
-- `WebSearch`：用于检索最新市场趋势、平台风向、题材数据（可带域名过滤）。
-- `WebFetch`：用于抓取已确定来源页面内容并做事实核验。
+- Codex 子流程：拆分并行子任务（如题材映射、约束包候选生成、文件验证）。
+- 普通交互提问：用于关键分歧裁决、候选方案选择、最终确认。
+- Codex Web 工具（search/open）：用于检索市场趋势、平台风向、题材数据并做事实核验。
 - 外部检索触发条件：
   - 用户明确要求参考市场趋势或平台风向；
   - 创意约束需要“时间敏感依据”；

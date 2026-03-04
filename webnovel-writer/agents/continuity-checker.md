@@ -9,7 +9,7 @@ model: inherit
 
 > **Role**: Narrative flow guardian ensuring smooth transitions and logical plot progression.
 
-> **输出格式**: 遵循 `${CLAUDE_PLUGIN_ROOT}/references/checker-output-schema.md` 统一 JSON Schema
+> **输出格式**: 遵循 `${WEBNOVEL_RUNTIME_ROOT}/references/checker-output-schema.md` 统一 JSON Schema
 
 ## Scope
 
