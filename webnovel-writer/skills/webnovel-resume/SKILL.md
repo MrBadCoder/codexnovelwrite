@@ -1,10 +1,10 @@
 ---
 name: webnovel-resume
 description: Recovers interrupted webnovel tasks with precise workflow state tracking. Detects interruption point and provides safe recovery options. Activates when user wants to resume or /webnovel-resume.
-allowed-tools: Read Bash AskUserQuestion
+allowed-tools: Read Bash
 ---
 
-# Task Resume Skill
+# Resume Skill
 
 ## Project Root Guard（必须先确认）
 
@@ -40,7 +40,7 @@ Copy and track progress:
 - [ ] Step 2: 加载数据规范 (cat "${SKILL_ROOT}/references/system-data-flow.md")
 - [ ] Step 3: 确认上下文充足
 - [ ] Step 4: 检测中断状态
-- [ ] Step 5: 展示恢复选项 (AskUserQuestion)
+- [ ] Step 5: 展示恢复选项 (普通交互提问)
 - [ ] Step 6: 执行恢复
 - [ ] Step 7: 继续任务 (可选)
 ```

@@ -1,7 +1,7 @@
 ---
 name: webnovel-review
 description: Reviews chapter quality with checker agents and generates reports. Use when the user asks for a chapter review or runs /webnovel-review.
-allowed-tools: Read Grep Write Edit Bash Task AskUserQuestion
+allowed-tools: Read Grep Write Edit Bash
 ---
 
 # Quality Review Skill
@@ -46,7 +46,7 @@ Step 映射（必须与 `workflow_manager.py get_pending_steps("webnovel-review"
 - Step 4：生成审查报告
 - Step 5：保存审查指标到 index.db
 - Step 6：写回审查记录到 state.json
-- Step 7：处理关键问题（AskUserQuestion）
+- Step 7：处理关键问题（普通交互提问）
 - Step 8：收尾（完成任务）
 
 Step 记录模板（bash，失败不阻断）：
@@ -99,10 +99,10 @@ cat "${SKILL_ROOT}/references/pacing-control.md"
 cat "$PROJECT_ROOT/.webnovel/state.json"
 ```
 
-## Step 3: 并行调用检查员（Task）
+## Step 3: 并行调用检查员（Codex 子流程）
 
 **调用约束**:
-- 必须通过 `Task` 工具调用审查 subagent，禁止主流程直接内联审查结论。
+- 必须通过 Codex 子流程调用审查 subagent，禁止主流程直接内联审查结论。
 - 各 subagent 结果全部返回后再生成总评与优先级。
 
 **Core**:
@@ -174,7 +174,7 @@ python "${SCRIPTS_DIR}/webnovel.py" --project-root "${PROJECT_ROOT}" update-stat
 
 ## Step 7: 处理关键问题
 
-如发现 critical 问题（`severity_counts.critical > 0` 或 `critical_issues` 非空），**必须使用 AskUserQuestion** 询问用户：
+如发现 critical 问题（`severity_counts.critical > 0` 或 `critical_issues` 非空），必须通过普通交互提问询问用户：
 - A) 立即修复（推荐）
 - B) 仅保存报告，稍后处理
 
