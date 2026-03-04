@@ -85,6 +85,49 @@ def test_resolve_project_root_uses_workspace_pointer(tmp_path):
     assert resolved == project_root.resolve()
 
 
+def test_resolve_project_root_prefers_codex_pointer_over_claude(tmp_path):
+    _ensure_scripts_on_path()
+
+    from project_locator import resolve_project_root
+
+    workspace = tmp_path / "workspace"
+    (workspace / ".codex").mkdir(parents=True, exist_ok=True)
+    (workspace / ".claude").mkdir(parents=True, exist_ok=True)
+
+    codex_project = workspace / "codex-project"
+    (codex_project / ".webnovel").mkdir(parents=True, exist_ok=True)
+    (codex_project / ".webnovel" / "state.json").write_text("{}", encoding="utf-8")
+
+    claude_project = workspace / "claude-project"
+    (claude_project / ".webnovel").mkdir(parents=True, exist_ok=True)
+    (claude_project / ".webnovel" / "state.json").write_text("{}", encoding="utf-8")
+
+    (workspace / ".codex" / ".webnovel-current-project").write_text(str(codex_project), encoding="utf-8")
+    (workspace / ".claude" / ".webnovel-current-project").write_text(str(claude_project), encoding="utf-8")
+
+    resolved = resolve_project_root(cwd=workspace)
+    assert resolved == codex_project.resolve()
+
+
+def test_write_current_project_pointer_prefers_codex_workspace_dir(tmp_path):
+    _ensure_scripts_on_path()
+
+    from project_locator import write_current_project_pointer
+
+    workspace = tmp_path / "workspace"
+    (workspace / ".codex").mkdir(parents=True, exist_ok=True)
+    (workspace / ".claude").mkdir(parents=True, exist_ok=True)
+
+    project_root = workspace / "book"
+    (project_root / ".webnovel").mkdir(parents=True, exist_ok=True)
+    (project_root / ".webnovel" / "state.json").write_text("{}", encoding="utf-8")
+
+    pointer_file = write_current_project_pointer(project_root, workspace_root=workspace)
+    assert pointer_file is not None
+    assert pointer_file == (workspace / ".codex" / ".webnovel-current-project")
+    assert pointer_file.read_text(encoding="utf-8").strip() == str(project_root.resolve())
+
+
 def test_resolve_project_root_ignores_stale_pointer_and_fallbacks(tmp_path):
     _ensure_scripts_on_path()
 
@@ -103,4 +146,3 @@ def test_resolve_project_root_ignores_stale_pointer_and_fallbacks(tmp_path):
 
     resolved = resolve_project_root(cwd=workspace)
     assert resolved == default_project.resolve()
-
