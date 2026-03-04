@@ -9,12 +9,12 @@ model: inherit
 
 > **Role**: Quality assurance specialist focused on reader satisfaction mechanics (爽点设计).
 
-> **输出格式**: 遵循 `${CLAUDE_PLUGIN_ROOT}/references/checker-output-schema.md` 统一 JSON Schema
+> **输出格式**: 遵循 `${WEBNOVEL_RUNTIME_ROOT}/references/checker-output-schema.md` 统一 JSON Schema
 
 ## 核心参考
 
-- **Taxonomy**: `${CLAUDE_PLUGIN_ROOT}/references/reading-power-taxonomy.md`
-- **Genre Profile**: `${CLAUDE_PLUGIN_ROOT}/references/genre-profiles.md`
+- **Taxonomy**: `${WEBNOVEL_RUNTIME_ROOT}/references/reading-power-taxonomy.md`
+- **Genre Profile**: `${WEBNOVEL_RUNTIME_ROOT}/references/genre-profiles.md`
 
 ## Scope
 

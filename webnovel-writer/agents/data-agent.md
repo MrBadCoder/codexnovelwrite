@@ -66,12 +66,12 @@ model: inherit
 - `${SCRIPTS_DIR}/webnovel.py`
 
 ```bash
-# 仅使用 CLAUDE_PLUGIN_ROOT，避免多路径探测带来的误判
-if [ -z "${CLAUDE_PLUGIN_ROOT}" ] || [ ! -d "${CLAUDE_PLUGIN_ROOT}/scripts" ]; then
-  echo "ERROR: 未设置 CLAUDE_PLUGIN_ROOT 或缺少目录: ${CLAUDE_PLUGIN_ROOT}/scripts" >&2
+# 仅使用 WEBNOVEL_RUNTIME_ROOT，避免多路径探测带来的误判
+if [ -z "${WEBNOVEL_RUNTIME_ROOT}" ] || [ ! -d "${WEBNOVEL_RUNTIME_ROOT}/scripts" ]; then
+  echo "ERROR: 未设置 WEBNOVEL_RUNTIME_ROOT 或缺少目录: ${WEBNOVEL_RUNTIME_ROOT}/scripts" >&2
   exit 1
 fi
-SCRIPTS_DIR="${CLAUDE_PLUGIN_ROOT}/scripts"
+SCRIPTS_DIR="${WEBNOVEL_RUNTIME_ROOT}/scripts"
 
 # 建议先确认解析出的 project_root，避免写到错误目录
 python "${SCRIPTS_DIR}/webnovel.py" --project-root "{project_root}" where
