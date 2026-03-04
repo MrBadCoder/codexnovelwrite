@@ -16,15 +16,7 @@ from typing import Optional
 from runtime_compat import normalize_windows_path
 
 from .context_weights import TEMPLATE_WEIGHTS_DYNAMIC_DEFAULT
-
-def _get_user_claude_root() -> Path:
-    raw = os.environ.get("WEBNOVEL_CLAUDE_HOME") or os.environ.get("CLAUDE_HOME")
-    if raw:
-        try:
-            return normalize_windows_path(raw).expanduser().resolve()
-        except Exception:
-            return normalize_windows_path(raw).expanduser()
-    return (Path.home() / ".claude").resolve()
+from .runtime_paths import get_user_config_dirs
 
 
 def _load_dotenv_file(env_path: Path, *, override: bool = False) -> bool:
@@ -54,14 +46,14 @@ def _load_dotenv():
 
     约定：
     - 项目级 `.env`（当前工作目录下）优先；
-    - 全局 `.env` 作为兜底：`~/.claude/webnovel-writer/.env`
+    - 全局 `.env` 兜底顺序：`~/.codex/webnovel-writer/.env` -> `~/.claude/webnovel-writer/.env`
     """
     # 1) 当前目录（常见：用户从项目根目录执行）
     _load_dotenv_file(Path.cwd() / ".env", override=False)
 
-    # 2) 用户级全局（常见：skills/agents 全局安装，API key 放这里最省心）
-    global_env = _get_user_claude_root() / "webnovel-writer" / ".env"
-    _load_dotenv_file(global_env, override=False)
+    # 2) 用户级全局（Codex 优先，Claude 兼容兜底）
+    for config_dir in get_user_config_dirs():
+        _load_dotenv_file(config_dir / ".env", override=False)
 
 
 def _load_project_dotenv(project_root: Path) -> None:
