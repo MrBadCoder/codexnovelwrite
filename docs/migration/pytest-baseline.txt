@@ -1,0 +1,270 @@
+
+==================================== ERRORS ====================================
+_ ERROR collecting webnovel-writer/scripts/data_modules/tests/test_api_client.py _
+ImportError while importing test module '/Users/liuxiangmiao/.config/superpowers/worktrees/codexnovelwrite/codex-migrate-runtime/webnovel-writer/scripts/data_modules/tests/test_api_client.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/importlib/__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+webnovel-writer/scripts/__init__.py:11: in <module>
+    from . import security_utils
+webnovel-writer/scripts/security_utils.py:18: in <module>
+    from runtime_compat import enable_windows_utf8_stdio
+E   ModuleNotFoundError: No module named 'runtime_compat'
+_ ERROR collecting webnovel-writer/scripts/data_modules/tests/test_archive_manager.py _
+ImportError while importing test module '/Users/liuxiangmiao/.config/superpowers/worktrees/codexnovelwrite/codex-migrate-runtime/webnovel-writer/scripts/data_modules/tests/test_archive_manager.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/importlib/__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+webnovel-writer/scripts/__init__.py:11: in <module>
+    from . import security_utils
+webnovel-writer/scripts/security_utils.py:18: in <module>
+    from runtime_compat import enable_windows_utf8_stdio
+E   ModuleNotFoundError: No module named 'runtime_compat'
+__ ERROR collecting webnovel-writer/scripts/data_modules/tests/test_config.py __
+ImportError while importing test module '/Users/liuxiangmiao/.config/superpowers/worktrees/codexnovelwrite/codex-migrate-runtime/webnovel-writer/scripts/data_modules/tests/test_config.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/importlib/__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+webnovel-writer/scripts/__init__.py:11: in <module>
+    from . import security_utils
+webnovel-writer/scripts/security_utils.py:18: in <module>
+    from runtime_compat import enable_windows_utf8_stdio
+E   ModuleNotFoundError: No module named 'runtime_compat'
+_ ERROR collecting webnovel-writer/scripts/data_modules/tests/test_context_manager.py _
+ImportError while importing test module '/Users/liuxiangmiao/.config/superpowers/worktrees/codexnovelwrite/codex-migrate-runtime/webnovel-writer/scripts/data_modules/tests/test_context_manager.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/importlib/__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+webnovel-writer/scripts/__init__.py:11: in <module>
+    from . import security_utils
+webnovel-writer/scripts/security_utils.py:18: in <module>
+    from runtime_compat import enable_windows_utf8_stdio
+E   ModuleNotFoundError: No module named 'runtime_compat'
+_ ERROR collecting webnovel-writer/scripts/data_modules/tests/test_context_ranker.py _
+ImportError while importing test module '/Users/liuxiangmiao/.config/superpowers/worktrees/codexnovelwrite/codex-migrate-runtime/webnovel-writer/scripts/data_modules/tests/test_context_ranker.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/importlib/__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+webnovel-writer/scripts/__init__.py:11: in <module>
+    from . import security_utils
+webnovel-writer/scripts/security_utils.py:18: in <module>
+    from runtime_compat import enable_windows_utf8_stdio
+E   ModuleNotFoundError: No module named 'runtime_compat'
+_ ERROR collecting webnovel-writer/scripts/data_modules/tests/test_data_modules.py _
+ImportError while importing test module '/Users/liuxiangmiao/.config/superpowers/worktrees/codexnovelwrite/codex-migrate-runtime/webnovel-writer/scripts/data_modules/tests/test_data_modules.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/importlib/__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+webnovel-writer/scripts/__init__.py:11: in <module>
+    from . import security_utils
+webnovel-writer/scripts/security_utils.py:18: in <module>
+    from runtime_compat import enable_windows_utf8_stdio
+E   ModuleNotFoundError: No module named 'runtime_compat'
+_ ERROR collecting webnovel-writer/scripts/data_modules/tests/test_entity_linker_cli.py _
+ImportError while importing test module '/Users/liuxiangmiao/.config/superpowers/worktrees/codexnovelwrite/codex-migrate-runtime/webnovel-writer/scripts/data_modules/tests/test_entity_linker_cli.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/importlib/__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+webnovel-writer/scripts/__init__.py:11: in <module>
+    from . import security_utils
+webnovel-writer/scripts/security_utils.py:18: in <module>
+    from runtime_compat import enable_windows_utf8_stdio
+E   ModuleNotFoundError: No module named 'runtime_compat'
+_ ERROR collecting webnovel-writer/scripts/data_modules/tests/test_extract_chapter_context.py _
+ImportError while importing test module '/Users/liuxiangmiao/.config/superpowers/worktrees/codexnovelwrite/codex-migrate-runtime/webnovel-writer/scripts/data_modules/tests/test_extract_chapter_context.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/importlib/__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+webnovel-writer/scripts/__init__.py:11: in <module>
+    from . import security_utils
+webnovel-writer/scripts/security_utils.py:18: in <module>
+    from runtime_compat import enable_windows_utf8_stdio
+E   ModuleNotFoundError: No module named 'runtime_compat'
+_ ERROR collecting webnovel-writer/scripts/data_modules/tests/test_migrate_state_to_sqlite.py _
+ImportError while importing test module '/Users/liuxiangmiao/.config/superpowers/worktrees/codexnovelwrite/codex-migrate-runtime/webnovel-writer/scripts/data_modules/tests/test_migrate_state_to_sqlite.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/importlib/__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+webnovel-writer/scripts/__init__.py:11: in <module>
+    from . import security_utils
+webnovel-writer/scripts/security_utils.py:18: in <module>
+    from runtime_compat import enable_windows_utf8_stdio
+E   ModuleNotFoundError: No module named 'runtime_compat'
+_ ERROR collecting webnovel-writer/scripts/data_modules/tests/test_project_locator.py _
+ImportError while importing test module '/Users/liuxiangmiao/.config/superpowers/worktrees/codexnovelwrite/codex-migrate-runtime/webnovel-writer/scripts/data_modules/tests/test_project_locator.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/importlib/__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+webnovel-writer/scripts/__init__.py:11: in <module>
+    from . import security_utils
+webnovel-writer/scripts/security_utils.py:18: in <module>
+    from runtime_compat import enable_windows_utf8_stdio
+E   ModuleNotFoundError: No module named 'runtime_compat'
+_ ERROR collecting webnovel-writer/scripts/data_modules/tests/test_rag_adapter.py _
+ImportError while importing test module '/Users/liuxiangmiao/.config/superpowers/worktrees/codexnovelwrite/codex-migrate-runtime/webnovel-writer/scripts/data_modules/tests/test_rag_adapter.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/importlib/__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+webnovel-writer/scripts/__init__.py:11: in <module>
+    from . import security_utils
+webnovel-writer/scripts/security_utils.py:18: in <module>
+    from runtime_compat import enable_windows_utf8_stdio
+E   ModuleNotFoundError: No module named 'runtime_compat'
+_ ERROR collecting webnovel-writer/scripts/data_modules/tests/test_relationship_graph.py _
+ImportError while importing test module '/Users/liuxiangmiao/.config/superpowers/worktrees/codexnovelwrite/codex-migrate-runtime/webnovel-writer/scripts/data_modules/tests/test_relationship_graph.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/importlib/__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+webnovel-writer/scripts/__init__.py:11: in <module>
+    from . import security_utils
+webnovel-writer/scripts/security_utils.py:18: in <module>
+    from runtime_compat import enable_windows_utf8_stdio
+E   ModuleNotFoundError: No module named 'runtime_compat'
+_ ERROR collecting webnovel-writer/scripts/data_modules/tests/test_sql_state_manager.py _
+ImportError while importing test module '/Users/liuxiangmiao/.config/superpowers/worktrees/codexnovelwrite/codex-migrate-runtime/webnovel-writer/scripts/data_modules/tests/test_sql_state_manager.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/importlib/__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+webnovel-writer/scripts/__init__.py:11: in <module>
+    from . import security_utils
+webnovel-writer/scripts/security_utils.py:18: in <module>
+    from runtime_compat import enable_windows_utf8_stdio
+E   ModuleNotFoundError: No module named 'runtime_compat'
+_ ERROR collecting webnovel-writer/scripts/data_modules/tests/test_state_manager_extra.py _
+ImportError while importing test module '/Users/liuxiangmiao/.config/superpowers/worktrees/codexnovelwrite/codex-migrate-runtime/webnovel-writer/scripts/data_modules/tests/test_state_manager_extra.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/importlib/__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+webnovel-writer/scripts/__init__.py:11: in <module>
+    from . import security_utils
+webnovel-writer/scripts/security_utils.py:18: in <module>
+    from runtime_compat import enable_windows_utf8_stdio
+E   ModuleNotFoundError: No module named 'runtime_compat'
+_ ERROR collecting webnovel-writer/scripts/data_modules/tests/test_state_validator.py _
+ImportError while importing test module '/Users/liuxiangmiao/.config/superpowers/worktrees/codexnovelwrite/codex-migrate-runtime/webnovel-writer/scripts/data_modules/tests/test_state_validator.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/importlib/__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+webnovel-writer/scripts/__init__.py:11: in <module>
+    from . import security_utils
+webnovel-writer/scripts/security_utils.py:18: in <module>
+    from runtime_compat import enable_windows_utf8_stdio
+E   ModuleNotFoundError: No module named 'runtime_compat'
+_ ERROR collecting webnovel-writer/scripts/data_modules/tests/test_status_reporter.py _
+ImportError while importing test module '/Users/liuxiangmiao/.config/superpowers/worktrees/codexnovelwrite/codex-migrate-runtime/webnovel-writer/scripts/data_modules/tests/test_status_reporter.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/importlib/__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+webnovel-writer/scripts/__init__.py:11: in <module>
+    from . import security_utils
+webnovel-writer/scripts/security_utils.py:18: in <module>
+    from runtime_compat import enable_windows_utf8_stdio
+E   ModuleNotFoundError: No module named 'runtime_compat'
+_ ERROR collecting webnovel-writer/scripts/data_modules/tests/test_style_sampler_cli.py _
+ImportError while importing test module '/Users/liuxiangmiao/.config/superpowers/worktrees/codexnovelwrite/codex-migrate-runtime/webnovel-writer/scripts/data_modules/tests/test_style_sampler_cli.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/importlib/__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+webnovel-writer/scripts/__init__.py:11: in <module>
+    from . import security_utils
+webnovel-writer/scripts/security_utils.py:18: in <module>
+    from runtime_compat import enable_windows_utf8_stdio
+E   ModuleNotFoundError: No module named 'runtime_compat'
+_ ERROR collecting webnovel-writer/scripts/data_modules/tests/test_update_state_add_review_cli.py _
+ImportError while importing test module '/Users/liuxiangmiao/.config/superpowers/worktrees/codexnovelwrite/codex-migrate-runtime/webnovel-writer/scripts/data_modules/tests/test_update_state_add_review_cli.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/importlib/__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+webnovel-writer/scripts/__init__.py:11: in <module>
+    from . import security_utils
+webnovel-writer/scripts/security_utils.py:18: in <module>
+    from runtime_compat import enable_windows_utf8_stdio
+E   ModuleNotFoundError: No module named 'runtime_compat'
+_ ERROR collecting webnovel-writer/scripts/data_modules/tests/test_webnovel_unified_cli.py _
+ImportError while importing test module '/Users/liuxiangmiao/.config/superpowers/worktrees/codexnovelwrite/codex-migrate-runtime/webnovel-writer/scripts/data_modules/tests/test_webnovel_unified_cli.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/importlib/__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+webnovel-writer/scripts/__init__.py:11: in <module>
+    from . import security_utils
+webnovel-writer/scripts/security_utils.py:18: in <module>
+    from runtime_compat import enable_windows_utf8_stdio
+E   ModuleNotFoundError: No module named 'runtime_compat'
+_ ERROR collecting webnovel-writer/scripts/data_modules/tests/test_workflow_manager.py _
+ImportError while importing test module '/Users/liuxiangmiao/.config/superpowers/worktrees/codexnovelwrite/codex-migrate-runtime/webnovel-writer/scripts/data_modules/tests/test_workflow_manager.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/importlib/__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+webnovel-writer/scripts/__init__.py:11: in <module>
+    from . import security_utils
+webnovel-writer/scripts/security_utils.py:18: in <module>
+    from runtime_compat import enable_windows_utf8_stdio
+E   ModuleNotFoundError: No module named 'runtime_compat'
+=============================== warnings summary ===============================
+../../../../../../../opt/homebrew/lib/python3.14/site-packages/_pytest/config/__init__.py:1575
+  /opt/homebrew/lib/python3.14/site-packages/_pytest/config/__init__.py:1575: PytestConfigWarning: No files were found in testpaths; consider removing or adjusting your testpaths configuration. Searching recursively from the current directory instead.
+    self.args, self.args_source = self._decide_args(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+ERROR webnovel-writer/scripts/data_modules/tests/test_api_client.py
+ERROR webnovel-writer/scripts/data_modules/tests/test_archive_manager.py
+ERROR webnovel-writer/scripts/data_modules/tests/test_config.py
+ERROR webnovel-writer/scripts/data_modules/tests/test_context_manager.py
+ERROR webnovel-writer/scripts/data_modules/tests/test_context_ranker.py
+ERROR webnovel-writer/scripts/data_modules/tests/test_data_modules.py
+ERROR webnovel-writer/scripts/data_modules/tests/test_entity_linker_cli.py
+ERROR webnovel-writer/scripts/data_modules/tests/test_extract_chapter_context.py
+ERROR webnovel-writer/scripts/data_modules/tests/test_migrate_state_to_sqlite.py
+ERROR webnovel-writer/scripts/data_modules/tests/test_project_locator.py
+ERROR webnovel-writer/scripts/data_modules/tests/test_rag_adapter.py
+ERROR webnovel-writer/scripts/data_modules/tests/test_relationship_graph.py
+ERROR webnovel-writer/scripts/data_modules/tests/test_sql_state_manager.py
+ERROR webnovel-writer/scripts/data_modules/tests/test_state_manager_extra.py
+ERROR webnovel-writer/scripts/data_modules/tests/test_state_validator.py
+ERROR webnovel-writer/scripts/data_modules/tests/test_status_reporter.py
+ERROR webnovel-writer/scripts/data_modules/tests/test_style_sampler_cli.py
+ERROR webnovel-writer/scripts/data_modules/tests/test_update_state_add_review_cli.py
+ERROR webnovel-writer/scripts/data_modules/tests/test_webnovel_unified_cli.py
+ERROR webnovel-writer/scripts/data_modules/tests/test_workflow_manager.py
+!!!!!!!!!!!!!!!!!!! Interrupted: 20 errors during collection !!!!!!!!!!!!!!!!!!!
